@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BioSimDB</title>
+    {% include 'main/head.html' %}
+    {% include 'main/nav.html' %}
+</head>
+</html>
+
+<body class="d-flex flex-column min-vh-100">
+    <div class="container bg-white rounded border">
+    </br>
+        <h1 class="text-left"><a class="link-dark" href="/BioSimDB" style="text-decoration:none">Demo BioSimDB</a></h1>
+        <p class="text-left">Explore entries added to your BioSimDB</p>
+        <table>
+            <thead>
+                <tr>
+                    <th data-toggle="tooltip" data-placement="bottom" title="Sort"><a class="link-dark" href="{{ url_for('data.display_data', page=1, sort_column='title', sort_direction='asc') }}">Title</a></th>
+                    <th data-toggle="tooltip" data-placement="bottom" title="Sort"><a class="link-dark" href="{{ url_for('data.display_data', page=1, sort_column='abstract', sort_direction='asc') }}">Abstract</a></th>
+                    <th data-toggle="tooltip" data-placement="bottom" title="Sort"><a class="link-dark" href="{{ url_for('data.display_data', page=1, sort_column='project_ID', sort_direction='desc') }}">ID</a></th>
+                    <!-- Add more table headers based on your data -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr class="clickable" onclick="window.location='search_results/entry/{{ record['project_ID'] }}'" data-toggle="tooltip" data-placement="bottom" title="View more">
+                    <td class="text-line align-top" style="max-width: 90%;">{{ record['title'] }}</td>
+                    <td class="multi-line align-top" style="max-width: 95%;">{{ record['abstract'] }}</td>
+                    <td class="align-top">{{ record['project_ID'] }}</td>
+                    <!-- Add more table cells based on your data -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        {% include 'data/pagination.html' %}
+        <br>
+    </div>
+    <br>
+    {% include 'main/footer.html' %}
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--https://www.unpkg.com/browse/molstar@4.6.0/-->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=0.5, maximum-scale=0.5">
+        <!--<link rel="icon" href="./favicon.ico" type="image/x-icon">-->
+        <title>Embedded Mol* Viewer</title>
+        <link rel="stylesheet" type="text/css" href="https://www.unpkg.com/molstar@4.6.0/build/viewer/molstar.css" />
+        <style>
+            #app {
+                position: relative !important;
+                left: 200px !important;
+                top: 200px !important;
+                width: 800px !important;
+                height: 600px !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script type="text/javascript" src="https://www.unpkg.com/molstar@4.6.0/build/viewer/molstar.js"></script>
+        <script type="text/javascript">
+            molstar.Viewer.create('app', {
+                layoutIsExpanded: false,
+                layoutShowControls: false,
+                layoutShowRemoteState: false,
+                layoutShowSequence: true,
+                layoutShowLog: false,
+                layoutShowLeftPanel: true,
+
+                //viewportShowExpand: true,
+                viewportShowSelectionMode: false,
+                viewportShowAnimation: false,
+
+                pdbProvider: 'rcsb',
+                emdbProvider: 'rcsb',
+            }).then(viewer => {
+                viewer.loadPdb('7bv2');
+                //viewer.LoadStructureOptions('{{ file_name | safe }}', 'pdb');
+                //viewer.loadEmdb('EMD-30210', { detail: 6 });
+                // viewer.loadAllModelsOrAssemblyFromUrl('https://cs.litemol.org/5ire/full', 'mmcif', false, { representationParams: { theme: { globalName: 'operator-name' } } })
+
+                // viewer.loadStructureFromUrl('https://files.rcsb.org/download/1AKI.pdb', 'pdb', false, {
+                //     representationParams: {
+                //         theme: {
+                //             globalName: 'uniform',
+                //             globalColorParams: { value: 0xff0000 }
+                //         }
+                //     },
+                //     label: 'my structure'
+                // });
+
+                // viewer.loadTrajectory({
+                //     model: { kind: 'topology-data', data: '{{ top_name | safe }}', format: 'gro' },
+                //     coordinates: { kind: 'coordinates-data', data: '{{ traj_name | safe }}', format: 'trr', isBinary: true},
+                //     preset: 'all-models' // or 'default'
+                //     });
+
+                // viewer.loadStructureFromData('{{ pdb_name | safe }}','pdb'
+                //     );
+            });
+        </script>
+
+    </body>
+</html>

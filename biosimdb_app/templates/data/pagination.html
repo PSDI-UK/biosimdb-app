@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <!-- Pagination links -->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link link-dark" aria-label="Previous" href="{{ page_name }}?page={{ page - 1 }}&sort_column={{ sort_column }}&sort_direction={{ sort_direction }}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for p in range(1, total_pages + 1) %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <a class="page-link link-dark" href="{{ page_name }}?page={{ p }}&sort_column={{ sort_column }}&sort_direction={{ sort_direction }}">{{ p }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link link-dark" aria-label="Next" href="{{ page_name }}?page={{ page + 1 }}&sort_column={{ sort_column }}&sort_direction={{ sort_direction }}">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </body>
+</html>

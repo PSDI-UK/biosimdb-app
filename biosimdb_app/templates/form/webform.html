@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<head>
+    <title>BioSimDB webform</title>
+    {% include 'main/head.html' %}
+    {% include 'main/nav.html' %}
+</head>
+
+<body>
+
+    <!--*******************************************-->
+    <div class="container">
+        {# get_flashed_messages() is auto sent to the template with the flash() call #}
+        {% for mess in get_flashed_messages()  %}
+        {% if mess == "Submission entered into database." %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {% else %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {% endif %}
+            {{mess}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        {% endfor %}
+    </div>
+    <!--*******************************************-->
+
+
+    <form class="upload-form container bg-white rounded border" action="/webform" method="POST" enctype="multipart/form-data" id="downloadForm" >
+    <div class="container bg-white">
+        </br>
+        <h1 class="text-left">Add Your Simulation</h1>
+        <p class="text-left">
+            Add a simulation to your database by filling in the form below. 
+        </p>
+
+
+        <!--*******************************************-->
+        <br /><h4>1. Author information</h4>
+            <p>Add the name and email of the corresponding author, along with any authors and citations that have contributed to this work.</p>
+
+        <div class="row">
+            <div class="col-sm">
+            <label for="name" class="form-label">Corresponding author<span class="required">*</span></label>
+            <input type="text" class="form-control" id="name" placeholder="Enter full name" name="creator_name" required>
+            </div>
+
+            <div class="col-sm">
+            <label for="input_email" class="form-label">Corresponding email address <span class="required">*</span></label>
+            <input type="email" class="form-control" id="input_email" aria-describedby="emailHelp" placeholder="Enter an institutional email" name="creator_email" required>
+            </div>
+        </div>
+        <!--*******************************************-->
+
+
+        <!--*******************************************-->
+        <div id="authorFields"></div>
+
+        <div class="mt-3 d-grid gap-2">
+            <button type="button" class="btn btn-secondary btn-sm" id="addAuthorField">Add another author</button>
+        </div>
+        <!--*******************************************-->
+
+
+        <!--*******************************************-->
+        <div id="citationFields">
+            <div class="row">
+                <div class="col-sm">
+                <label for="author1" class="form-label">Citation/s</label>
+                <input type="text" class="form-control" id="author1" placeholder="Include DOI of the published work related to uploaded simulation/s" name="citation_name[]">
+                </div>
+            </div>
+            </div>
+    
+            <div class="mt-3 d-grid gap-2">
+                <button type="button" class="btn btn-secondary btn-sm" id="addCitationField">Add another citation</button>
+            </div>
+        <!--*******************************************-->
+
+
+        <!--*******************************************-->        
+        <br /><br /><h4>2. Simulation details</h4>
+            <p>Add a title and description of your simulation, similar to a scientific journal.</p>
+        <label for="system" class="form-label">Title <span class="required">*</span></label>
+        <input type="text" class="form-control" id="system" name="sim_title" placeholder="Give the simulation a title" required>
+
+        <label for="description" class="form-label">Abstract <span class="required">*</span></label>
+        <textarea class="form-control" id="description" rows="2" name="sim_description" required placeholder="Add why the simulation was performed and its scientific significance"></textarea>
+
+          <div id="downloadFields">
+            <br /><br /><h4>3. Add simulation files</h4>
+            <p>Upload a topology and trajectory file, and/or upload the aiida archive file containing the full provenance of your simulation. </p>
+            <p>Note: Multiple trajectory files can be uploaded with an asscoiated topology file.</p>
+            <div>
+            <h5>Entry 1.</h5>
+            <div class="row form-group">
+                <div class="col-sm">
+                    <label for="download1" class="form-label">Upload topology file
+                    </label>
+                    <input class="form-control" type="file" id="download1" name="topology_file1[]">
+                </div>
+                <div class="col-sm">
+                    <label for="download1" class="form-label">Upload trajectory file/s
+                    </label>
+                    <input class="form-control" type="file" id="download1" name="trajectory_file1[]" multiple="">
+                </div>
+                <div class="col-sm">
+                    <label for="download1" class="form-label">Upload aiida archive file</label>
+                    <input class="form-control" type="file" id="download1" name="aiida_archive_file1[]">
+                </div>
+            </div> 
+          </div> 
+          </div>  
+        
+          <div class="mt-3 d-grid gap-2">
+            <button type="button" class="btn btn-secondary btn-sm" id="addDownloadField">Add another simulation</button>
+            <input type="submit" class="btn btn-outline-success btn-lg" name="submit" value="Submit">
+          </div>
+          <br />
+        <!--*******************************************-->
+
+        
+    </div>
+    </form>
+      
+    <script>
+      document.getElementById('addDownloadField').addEventListener('click', function() {
+          var downloadFields = document.getElementById('downloadFields');
+          var downloadCount = downloadFields.childElementCount - 4; // depends on N uploads
+          if(downloadCount < 6){
+          var newFormGroupHTML = `
+          <div>
+            <br />
+            <h5>Entry ${downloadCount}.</h5>
+                <div class="row form-group">
+                    <div class="col-sm">
+                        <label for="download${downloadCount}" class="form-label">Upload topology file</label>
+                        <input class="form-control" type="file" id="download${downloadCount}" name="topology_file${downloadCount}[]">
+                    </div>
+
+                    <div class="col-sm">
+                    <label for="download${downloadCount}" class="form-label">Upload trajectory file/s</label>
+                    <input class="form-control" type="file" id="download${downloadCount}" name="trajectory_file${downloadCount}[]" multiple="">
+                    </div>
+
+                    <div class="col-sm">
+                    <label for="download${downloadCount}" class="form-label">Upload aiida archive file</label>
+                    <input class="form-control" type="file" id="download${downloadCount}" name="aiida_archive_file${downloadCount}[]">
+                    </div>
+                </div> 
+            </div>
+            `;
+      
+          var newField = document.createElement('div');
+          newField.className = 'row form-group';
+          newField.innerHTML = newFormGroupHTML;
+      
+          downloadFields.appendChild(newField);
+          }else{
+          alert('Limit of 5 entries per submission')
+          }
+      });
+    </script>
+
+
+     
+    <script>
+        document.getElementById('addAuthorField').addEventListener('click', function() {
+            var authorFields = document.getElementById('authorFields');
+            var authorCount = authorFields.childElementCount + 1; // depends on N uploads
+            if(authorCount < 16){
+            var newFormGroupHTML = `
+            <div class="row">
+                <div class="col-sm">
+                <label for="author${authorCount}" class="form-label">Additional author/s</label>
+                <input type="text" class="form-control" id="author${authorCount}" placeholder="Enter full name of additional author" name="author_name[]">
+                </div>
+            </div>
+            `;
+        
+            var newField = document.createElement('div');
+            newField.className = 'row form-group';
+            newField.innerHTML = newFormGroupHTML;
+        
+            authorFields.appendChild(newField);
+            }else{
+            alert('Limit of 15 authors per submission')
+            }
+        });
+    </script>
+
+
+    <script>
+        document.getElementById('addCitationField').addEventListener('click', function() {
+            var citationFields = document.getElementById('citationFields');
+            var citationCount = citationFields.childElementCount + 1; // depends on N uploads
+            if(citationCount < 11){
+            var newFormGroupHTML = `
+            <div class="row">
+                <div class="col-sm">
+                <label for="citation${citationCount}" class="form-label">Additional citation</label>
+                <input type="text" class="form-control" id="author${citationCount}" placeholder="Include DOI of the published work related to uploaded simulation/s" name="citation_name[]">
+                </div>
+            </div>
+            `;
+        
+            var newField = document.createElement('div');
+            newField.className = 'row form-group';
+            newField.innerHTML = newFormGroupHTML;
+        
+            citationFields.appendChild(newField);
+            }else{
+            alert('Limit of 10 citations per submission')
+            }
+        });
+    </script>
+
+    {% include 'main/footer.html' %}
+</body>
+
+</html>

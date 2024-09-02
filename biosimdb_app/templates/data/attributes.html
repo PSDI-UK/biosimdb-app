@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagination Example</title>
+    {% include 'main/head.html' %}
+    {% include 'main/nav.html' %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div class="container bg-white rounded border">
+    </br>
+    <h1 class="text-left"><a class="link-dark" href="/BioSimDB">BioSimDB</a></h1>
+        <h5>AiiDA process node attributes</h5>
+        {{ pyvis|safe }}
+        <br>
+
+        <form action='' method='get'>
+            <div class="row">
+                <div class="col">
+                    Start process node: <input type='text' name='start'>
+                </div>
+                <div class="col">
+                    End process node: <input type='text' name='end'>
+                </div>
+            </div>
+            <input type='submit' value='Get process nodes'>
+        </form>
+        <br>
+
+
+        <table class="table table-sm">
+            {% for process in data %}
+            <thead>
+                <tr>
+                    <th>Attribute</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for key, value in process.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+            </tbody>
+            {% endfor %}
+        </table> 
+
+    </div>
+    {% include 'main/footer.html' %}
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BioSimDB</title>
+    {% include 'main/head.html' %}
+    {% include 'main/nav.html' %}
+</head>
+</html>
+
+<body class="d-flex flex-column min-vh-100">
+    <div class="container bg-white rounded border">
+    </br>
+        <h1 class="text-left">FAQs</h1>
+        </br>
+        <h5>How to produce and submit your own simulation provenance?</h5>
+        <p class="text-left">
+            A simple outline:
+            <ol>
+                <li>
+                    <a class="link-dark" href="https://aiida-gromacs.readthedocs.io/en/latest/user_guide/installation.html">Install</a> our MD provenance tool
+                </li>
+                <li>
+                    <a class="link-dark" href="https://aiida-gromacs.readthedocs.io/en/latest/tutorials/lysozyme.html">Perform</a> your molecular system build and simulation setup
+                </li>
+                <li>
+                    <a class="link-dark" href="https://aiida-gromacs.readthedocs.io/en/latest/user_guide/aiida_cheatsheet.html#sharing-data">Save</a> your provenance file
+                </li>
+                <li>
+                    <a class="link-dark" href="{{ url_for('data.show_provenance_results') }}">View</a> your simulation provenance
+                </li>
+                <li>
+                    <a class="link-dark" href="{{ url_for('form.webform') }}">Upload</a> and share your simulation and provenance data
+                </li>
+                <li>
+                    <a class="link-dark" href="{{ url_for('data.display_data') }}">Explore</a> your simulation entries
+                </li>
+            </ol>
+        </p>
+    <br>
+    </div>
+    {% include 'main/footer.html' %}
+</body>
+</html>

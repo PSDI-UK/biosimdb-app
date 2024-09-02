@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagination Example</title>
+    {% include 'main/head.html' %}
+    {% include 'main/nav.html' %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div class="container bg-white rounded border">
+    </br>
+        <h1 class="text-left"><a class="link-dark" href="/BioSimDB" style="text-decoration:none"> Demo BioSimDB</a></h1>
+        <h5 class="text-left">{{ project_records[0]['title'] }}</h5>
+        <br>
+        {% for record in project_records %}
+        <div class="row">
+            <div class="col text-end">
+                <b>Abstract</b>
+            </div>
+            <div class="col-8">
+                {{ record['abstract'] }}
+            </div>
+        </div>
+        <!-- <div class="row">
+            <div class="col text-end">
+                <b>Simulation software</b>
+            </div>
+            <div class="col-8">
+                {{ record['software'] }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-end">
+                <b>MD forcefield</b>
+            </div>
+            <div class="col-8">
+                {{ record['forcefields'] }} 
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-end">
+                <b>Simulation length</b>
+            </div>
+            <div class="col-8">
+                {{ record['length'] }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-end">
+                <b>Time between snapshots</b>
+            </div>
+            <div class="col-8">
+                {{ record['time_between_snapshots'] }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-end">
+                <b>PDB ID, UniProt ID, etc.,</b>
+            </div>
+            <div class="col-8">
+                {{ record['experimental_structures'] }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-end">
+                <b>Citations</b>
+            </div>
+            <div class="col-8">
+                {{ record['citations'] }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col text-end">
+                <b>Datetime added</b>
+            </div>
+            <div class="col-8">
+                {{ record['datetime_added'] }} 
+            </div>
+        </div> -->
+
+        {% endfor %}
+
+        {% if sim_records %}
+
+        <div class="row">
+            <div class="col text-end">
+                <b>Temperature</b>
+            </div>
+            <div class="col-8">
+                {{ sim_records[0]['simulation_folder_name'] }}
+            </div>
+        </div>
+
+        {% endif %}
+
+
+        {{ aiida_info | safe }}
+        {{ traj_info | safe }}
+        <br>
+    </div>
+    {% include 'main/footer.html' %}
+</body>
+</html>
