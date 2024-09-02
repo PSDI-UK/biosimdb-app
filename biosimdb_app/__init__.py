@@ -6,6 +6,8 @@ then the application will be returned.
 
 import os
 
+__version__ = "0.0.1"
+
 from flask import Flask
 UPLOAD_FOLDER = "/tmp"
 
