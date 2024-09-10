@@ -48,6 +48,7 @@ def webform():
         # get the creator_ID, this time it should be created
         creator_ID = check_email_existence(cursor, user_email)
         project_ID = get_project_ID(cursor, creator_ID)
+        print("!!!! project_ID", project_ID)
 
         # top_filename, traj_file_name, aiida_filename = 
         save_uploaded_files(db, cursor, project_ID) #save uploaded files
@@ -85,7 +86,9 @@ def get_project_ID(cursor, creator_ID):
     """
     Find if email is already in the database
     """
-    query = f'SELECT `project_ID` FROM `project` WHERE `creator_ID`="{creator_ID}"'
+    # query = f'SELECT `project_ID` FROM `project` WHERE `creator_ID`="{creator_ID}"'
+    # get last entry in project table
+    query = f'SELECT `project_ID` FROM `project` WHERE `creator_ID`="{creator_ID}" ORDER BY `project_ID` DESC LIMIT 1'
     cursor.execute(query)
     result = cursor.fetchone()
     project_ID = result["project_ID"]

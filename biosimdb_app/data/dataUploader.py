@@ -37,11 +37,14 @@ def save_uploaded_files(db, cursor, project_ID):
     # Get the current date and time, will use it as folder name
     date = get_UC_time()
 
+
     for i in range(1,6):
         # print(i)
         top_file = request.files.getlist(f'topology_file{i}[]')
         traj_files = request.files.getlist(f'trajectory_file{i}[]')
         aiida_file = request.files.getlist(f'aiida_archive_file{i}[]')
+
+        # print("AA", len(top_file), len(traj_files), len(aiida_file))
 
         entry_folder = os.path.join(main_folder, f"{date}_entry{i}")
         mda_u_dict, md_metadata_dict = None, None
@@ -66,6 +69,7 @@ def save_uploaded_files(db, cursor, project_ID):
                 # os.remove(file_paths)
         if len(aiida_file) == 1 and aiida_file[0].filename != '':
             aiida_file_paths, aiida_file_names = move_to_temp_folder(aiida_file, temp_folder)
+            # print("BBB", top_file, traj_files, aiida_file)
             try:
                 archive_profile = SqliteZipBackend.create_profile(aiida_file_paths[0])
                 with profile_context(archive_profile):
@@ -74,8 +78,10 @@ def save_uploaded_files(db, cursor, project_ID):
                 flash(f"AiiDA archive file: : \"{', '.join(aiida_file_names)}\" for entry {i}. is unreadable, ensure it is readable by AiiDA before uploading.")
                 return redirect(url_for("form.webform"))
             if qb:
+                # print("DDD", top_file, traj_files, aiida_file)
                 upload_aiida_archive(aiida_file, entry_folder)
                 md_metadata_dict = extract_from_aiida_archive(aiida_file_paths[0])
+                # print("SSS", md_metadata_dict)
 
         # entry one always has file lengths as one, so have to treat it differently
         # to all other entries
@@ -90,6 +96,9 @@ def save_uploaded_files(db, cursor, project_ID):
                 continue
 
         software, thermostat, timestep, barostat, temperature, n_frames = None, None, None, None, None, None
+
+        # print("XXX", mda_u_dict.keys())
+        # print("YYY", md_metadata_dict.keys())
         if md_metadata_dict:
             software = md_metadata_dict["software"]
             thermostat = md_metadata_dict["thermostat"]
@@ -105,7 +114,7 @@ def save_uploaded_files(db, cursor, project_ID):
         db.commit()
 
         simulation_ID = get_simulation_ID(cursor, project_ID)
-        # print("sim_ID", simulation_ID, entry_folder, md_metadata_dict)
+        print("sim_ID", simulation_ID, entry_folder, md_metadata_dict)
 
         if mda_u_dict:
             molecules_list = mda_u_dict["resnames"]
@@ -131,6 +140,8 @@ def save_uploaded_files(db, cursor, project_ID):
             VALUES (?,?,?,?,?,?)"""
             cursor.execute(query_top, (simulation_ID, n_atoms, n_frames, time_between_snapshots, single_frame_coordinates, single_frame_dimensions))
             db.commit()
+
+    # db.close()
 
 
 
