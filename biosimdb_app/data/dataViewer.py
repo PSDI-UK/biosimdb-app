@@ -5,6 +5,7 @@ from flask import render_template, request, send_file, current_app
 import os
 from .inspect_aiida_db import aiida_attributes
 from biosimdb_app.utils.db import get_db
+import sqlite3
 
 @bp.route('/BioSimDB', methods=['GET'])
 def display_data():
@@ -61,8 +62,8 @@ def entry_info(project_ID):
     If a particular entry is selected by user, then open entry and provide all 
     info from database for said entry.
     """
-    query_projects = f'SELECT * FROM project WHERE project_ID="{project_ID}"'
-    query_sim = f'SELECT * FROM simulation WHERE project_ID="{project_ID}"'
+    query_projects = f'SELECT * FROM `project` WHERE `project_ID`="{project_ID}"'
+    query_sim = f'SELECT * FROM `simulation` WHERE `project_ID`="{project_ID}"'
 
     db = get_db()
     cursor = db.cursor()
@@ -72,6 +73,8 @@ def entry_info(project_ID):
 
     cursor.execute(query_projects)
     project_records = cursor.fetchall()
+    # for k in project_records[0].keys():
+    #     print(k, project_records[0][k])
 
     cursor.execute(query_sim)
     sim_records = cursor.fetchall()
@@ -79,7 +82,9 @@ def entry_info(project_ID):
     if len(sim_records) > 0:
         simulation_ID = sim_records[0]["simulation_ID"]
 
-        print(sim_records[0]["simulation_folder_name"])
+        # print(sim_records[0]["simulation_folder_name"])
+        # for t in sim_records[0].keys():
+        #     print("___", t, sim_records[0][t])
 
         query_top = f'SELECT * FROM topology WHERE simulation_ID="{simulation_ID}"'
         query_traj = f'SELECT * FROM trajectory WHERE simulation_ID="{simulation_ID}"'

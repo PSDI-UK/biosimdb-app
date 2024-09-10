@@ -82,6 +82,7 @@ def extract_from_aiida_archive(aiida_file_path):
             # print("$$$", entry.process_label)
             possible_top, possible_trajs = None, []
             for outputs in outgoing:
+                # print("**", outputs, type(outputs), entry.process_label)
                 # print(dir(outputs))
                 if isinstance(outputs, orm.Dict) and entry.process_label == "MdrunCalculation":
                     # print("^^^", outputs.get_dict())
