@@ -63,7 +63,6 @@ def save_uploaded_files(db, cursor, project_ID):
                 return redirect(url_for("form.webform"))
             if u:
                 get_protein_seq(u)
-                sys.exit()
                 upload_top_traj(top_file, traj_files, entry_folder)
                 mda_u_dict = extract_from_mda_universe(u)
 
