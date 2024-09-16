@@ -25,13 +25,15 @@ def get_search_text():
 
 @bp.route('/search_results/<search_text>')
 def search_data(search_text):
-    query = f"""SELECT title, abstract, datetime_added, 
-            simulation_ID, topology_file 
+    query = f"""SELECT `title`, `abstract`, `datetime added`, `Project_ID`
             FROM
-            `simulation`
+            `project`
             WHERE
-            (`title` AND `software` AND `forcefields` AND 
-            `abstract` AND `citations`) LIKE '{search_text}%'
+            `title` LIKE '%{search_text}%'
+            OR
+            `abstract` LIKE '%{search_text}%'
+            OR
+            `citations` LIKE '%{search_text}%'
             """
 
     records, page, total_pages, sort_column, sort_direction = dataViewer.get_data(query)

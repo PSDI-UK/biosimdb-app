@@ -5,14 +5,14 @@ from flask import render_template, request, send_file, current_app
 import os
 from .inspect_aiida_db import aiida_attributes
 from biosimdb_app.utils.db import get_db
-import sqlite3
+import json
 
 @bp.route('/BioSimDB', methods=['GET'])
 def display_data():
     """
     Display X number of database entries
     """
-    query = 'SELECT * FROM project'
+    query = 'SELECT * FROM `project`'
     records, page, total_pages, sort_column, sort_direction = get_data(query)
     return render_template('data/showdata.html', page_name="/BioSimDB", 
             records=records, page=page, 
@@ -23,7 +23,7 @@ def get_data(query):
     """
     """
     page = request.args.get('page', 1, type=int)
-    sort_column = request.args.get('sort_column', 'datetime_added', type=str)
+    sort_column = request.args.get('sort_column', '`datetime added`', type=str)
     sort_direction = request.args.get('sort_direction', 'desc', type=str)
     per_page = 10 # number of records per page
     
@@ -74,11 +74,12 @@ def entry_info(project_ID):
     cursor.execute(query_projects)
     project_records = cursor.fetchall()
     # for k in project_records[0].keys():
-    #     print(k, project_records[0][k])
+    #     if k in ["authors", "citations"]:
+    #         print(k, project_records[0][k], json.loads(project_records[0][k]))
 
     cursor.execute(query_sim)
     sim_records = cursor.fetchall()
-    print(sim_records)
+    # print(sim_records, len(sim_records))
     if len(sim_records) > 0:
         simulation_ID = sim_records[0]["simulation_ID"]
 
@@ -94,10 +95,17 @@ def entry_info(project_ID):
 
         cursor.execute(query_traj)
         traj_records = cursor.fetchall()
+        # print("&&&", json.load(traj_records[0]["single frame coordinates"]))
+
+        m = max(len(sim_records), len(top_records), len(traj_records))
+        if len(top_records) < m:
+            top_records = (top_records + m * [{}])[:m]
+        if len(traj_records) < m:
+            traj_records = (traj_records + m * [{}])[:m]
 
         return render_template('data/entry.html', project_records=project_records, 
                 sim_records=sim_records, top_records=top_records, 
-                traj_records=traj_records
+                traj_records=traj_records, zip=zip, json=json, enumerate=enumerate,
                 #trajectory_name=trajectory_name_db, traj_info=traj_info, 
                 #aiida_info=aiida_info
                 )

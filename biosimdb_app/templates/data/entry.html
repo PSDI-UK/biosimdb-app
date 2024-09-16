@@ -10,98 +10,94 @@
     <div class="container bg-white rounded border">
     </br>
         <h1 class="text-left"><a class="link-dark" href="/BioSimDB" style="text-decoration:none"> Demo BioSimDB</a></h1>
-        <h5 class="text-left">{{ project_records[0]['title'] }}</h5>
+
+        <h5 class="text-left">Title: {{ project_records[0]['title'] }}</h5>
         <br>
-        {% for record in project_records %}
-        <div class="row">
-            <div class="col text-end">
-                <b>Abstract</b>
-            </div>
-            <div class="col-8">
-                {{ record['abstract'] }}
-            </div>
-        </div>
-        <!-- <div class="row">
-            <div class="col text-end">
-                <b>Simulation software</b>
-            </div>
-            <div class="col-8">
-                {{ record['software'] }}
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col text-end">
-                <b>MD forcefield</b>
-            </div>
-            <div class="col-8">
-                {{ record['forcefields'] }} 
-            </div>
-        </div>
+        <!-- PROJECT TABLE -->
+        {% for p in project_records[0].keys() %}
+            {% if "ID" not in p and "title" not in p %}
+                <div class="row">
+                    <div class="col text-end">
+                        <b>{{ p }}</b>
+                    </div>
+                    <div class="col-8">
+                        {% if p in ["authors", "citations"] %}
+                            {{ ", ".join(json.loads(project_records[0][p])) }}
+                        {% else %}
+                            {{ project_records[0][p] }}
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
 
-        <div class="row">
-            <div class="col text-end">
-                <b>Simulation length</b>
-            </div>
-            <div class="col-8">
-                {{ record['length'] }}
-            </div>
-        </div>
+        <!-- Iterate through 3 tables: SIM, TOP and TRAJ -->
+        {% for i, (sim, top, traj) in enumerate(zip(sim_records, top_records, traj_records)) %}
 
-        <div class="row">
-            <div class="col text-end">
-                <b>Time between snapshots</b>
-            </div>
-            <div class="col-8">
-                {{ record['time_between_snapshots'] }}
-            </div>
-        </div>
+            <br />
+            <h5 class="text-left">Simulation Entry {{ i+1 }}</h5>
+            {% for s in sim.keys() %}
+                {% if "ID" not in s and sim[s] != None %}
+                    <div class="row">
+                        <div class="col text-end">
+                            <b>{{ s }}</b>
+                        </div>
+                        <div class="col-8" style="word-wrap:break-word">
+                            {% if s in ["forcefields", "experimental structures"] %}
+                                {{ ", ".join(json.loads(sim[s])) }}
+                            {% else %}
+                                {{ sim[s] }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
 
-        <div class="row">
-            <div class="col text-end">
-                <b>PDB ID, UniProt ID, etc.,</b>
-            </div>
-            <div class="col-8">
-                {{ record['experimental_structures'] }}
-            </div>
-        </div>
+            <br />
+            <h5 class="text-left">Topology Entry {{ i+1 }}</h5>
+            {% for t in top.keys() %}
+                {% if "ID" not in t and top[t] != None %}
+                    <div class="row">
+                        <div class="col text-end">
+                            <b>{{ t }}</b>
+                        </div>
+                        <div class="col-8">
+                            {% if t in ["atoms list", "molecules list"] %}
+                                <div class="scrollx"> {{ ", ".join(json.loads(top[t])) }} </div>
+                            {% elif t in ["masses list"] %}
+                                <div class="scrollx"> {{ json.loads(top[t]) }} </div>
+                            {% else %}
+                                {{ top[t] }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
 
-        <div class="row">
-            <div class="col text-end">
-                <b>Citations</b>
-            </div>
-            <div class="col-8">
-                {{ record['citations'] }}
-            </div>
-        </div>
+            <br />
+            <h5 class="text-left">Trajectory Entry {{ i+1 }}</h5>
+            {% for tr in traj.keys() %}
+                {% if "ID" not in tr %}
+                    <div class="row">
+                        <div class="col text-end">
+                            <b>{{ tr }}</b>
+                        </div>
+                        <div class="col-8">
+                            {% if tr in ["single frame coordinates", "single frame dimensions"] %}
+                                <div class="scrollx"> {{ json.loads(traj[tr]) }} </div>
+                            {% else %}
+                                {{ traj[tr] }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
 
-        <div class="row">
-            <div class="col text-end">
-                <b>Datetime added</b>
-            </div>
-            <div class="col-8">
-                {{ record['datetime_added'] }} 
-            </div>
-        </div> -->
 
         {% endfor %}
 
-        {% if sim_records %}
-
-        <div class="row">
-            <div class="col text-end">
-                <b>Temperature</b>
-            </div>
-            <div class="col-8" style="word-wrap:break-word">
-                {{ sim_records[0]['temperature'] }} K
-            </div>
-        </div>
-
-        {% endif %}
-
-
-        {{ aiida_info | safe }}
-        {{ traj_info | safe }}
         <br>
     </div>
     {% include 'main/footer.html' %}

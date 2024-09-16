@@ -48,7 +48,7 @@ def webform():
         # get the creator_ID, this time it should be created
         creator_ID = check_email_existence(cursor, user_email)
         project_ID = get_project_ID(cursor, creator_ID)
-        print("!!!! project_ID", project_ID)
+        # print("!!!! project_ID", project_ID)
 
         # top_filename, traj_file_name, aiida_filename = 
         save_uploaded_files(db, cursor, project_ID) #save uploaded files

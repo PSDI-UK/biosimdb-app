@@ -3,6 +3,7 @@ from zipfile import ZipFile
 from datetime import datetime
 import pytz
 import os
+import sys
 from flask import request, send_file, current_app, flash, redirect, url_for
 
 import aiida
@@ -11,7 +12,7 @@ from aiida.storage.sqlite_zip.backend import SqliteZipBackend
 
 import MDAnalysis as mda
 
-from biosimdb_app.data.simulationParser import extract_from_mda_universe, extract_from_aiida_archive
+from biosimdb_app.data.simulationParser import extract_from_mda_universe, extract_from_aiida_archive, get_protein_seq
 
 def get_UC_time():
     """
@@ -61,6 +62,8 @@ def save_uploaded_files(db, cursor, project_ID):
                 flash(f"Topology: \"{', '.join(top_file_names)}\" and trajectory: \"{', '.join(traj_file_names)}\" for entry {i}, are unreadable, ensure they are readable in MDAnalysis before uploading.")
                 return redirect(url_for("form.webform"))
             if u:
+                get_protein_seq(u)
+                sys.exit()
                 upload_top_traj(top_file, traj_files, entry_folder)
                 mda_u_dict = extract_from_mda_universe(u)
 
@@ -108,13 +111,13 @@ def save_uploaded_files(db, cursor, project_ID):
             n_frames = md_metadata_dict["n_frames"]
 
         query_sim = f"""INSERT INTO simulation 
-        (`project_ID`, `software`, `thermostat`, `timestep`, `barostat`, `temperature`, `n_frames`, `simulation_folder_name`) 
+        (`project_ID`, `software`, `thermostat`, `timestep`, `barostat`, `temperature`, `number of frames`, `simulation directory`) 
         VALUES (?,?,?,?,?,?,?,?)"""
         cursor.execute(query_sim, (project_ID, software, thermostat, timestep, barostat, temperature, n_frames, entry_folder))
         db.commit()
 
         simulation_ID = get_simulation_ID(cursor, project_ID)
-        print("sim_ID", simulation_ID, entry_folder, md_metadata_dict)
+        # print("sim_ID", simulation_ID, entry_folder, md_metadata_dict)
 
         if mda_u_dict:
             molecules_list = mda_u_dict["resnames"]
@@ -130,13 +133,13 @@ def save_uploaded_files(db, cursor, project_ID):
             system_charge = mda_u_dict["system_charge"]
 
             query_top = f"""INSERT INTO topology 
-            (`simulation_ID`, `atoms_list`, `masses_list`, `molecules_list`, `charges_list`, `system_charge`) 
+            (`simulation_ID`, `atoms list`, `masses list`, `molecules list`, `charges list`, `system charge`) 
             VALUES (?,?,?,?,?,?)"""
             cursor.execute(query_top, (simulation_ID, atoms_list, masses_list, molecules_list, charges_list, system_charge))
             db.commit()
 
             query_top = f"""INSERT INTO trajectory 
-            (`simulation_ID`, `n_atoms`, `n_frames`, `time_between_snapshots`, `single_frame_coordinates`, `single_frame_dimensions`) 
+            (`simulation_ID`, `number of atoms`, `number of frames`, `time between snapshots`, `single frame coordinates`, `single frame dimensions`) 
             VALUES (?,?,?,?,?,?)"""
             cursor.execute(query_top, (simulation_ID, n_atoms, n_frames, time_between_snapshots, single_frame_coordinates, single_frame_dimensions))
             db.commit()

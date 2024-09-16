@@ -74,3 +74,11 @@ th, td {
     background: var(--hover-color) !important;
     border: var(--hover-color) !important;
   }
+
+
+  .scrollx { 
+    height: 40px;
+    max-width: 500px;
+    overflow-x: scroll;
+    white-space: nowrap;
+ }

@@ -2,12 +2,21 @@
 # from . import bp
 from flask import current_app
 import os
-import MDAnalysis as mda
 import json
 
+import MDAnalysis as mda
+import Bio.SeqIO
 import aiida
 from aiida import orm, profile_context
 from aiida.storage.sqlite_zip.backend import SqliteZipBackend
+
+
+def get_protein_seq(u):
+    """
+    """
+    protein = u.select_atoms("protein").residues
+    seq = protein.sequence(id="sequence1", name="protein1")
+    print(seq)
 
 
 def extract_from_mda_universe(u):
@@ -19,11 +28,17 @@ def extract_from_mda_universe(u):
     """
     resnames = json.dumps(list(u.residues.resnames)) # convert numpy array
     atomnames = json.dumps(list(u.atoms.names))
-    atom_masses = json.dumps(list(u.atoms.masses))
+    atom_masses = list(u.atoms.masses.flatten())
+    atom_masses = json.dumps(" ".join(map(str, atom_masses)))
     n_atoms = len(u.atoms)
     n_frames = len(u.trajectory)
-    single_frame_positions = u.trajectory[0].positions # or use u.atoms.position
-    single_frame_dimensions = u.trajectory[0].dimensions
+    # single_frame_positions = u.trajectory[0].positions # or use u.atoms.position
+    single_frame_positions = list(u.trajectory[0].positions.flatten()) # or use u.atoms.position
+    single_frame_positions = json.dumps(" ".join(map(str, single_frame_positions)))
+    # single_frame_dimensions = u.trajectory[0].dimensions
+    single_frame_dimensions = list(u.trajectory[0].dimensions.flatten())
+    single_frame_dimensions = json.dumps(" ".join(map(str, single_frame_dimensions)))
+
     simulation_time = u.trajectory.time
     if simulation_time != 0.:
         time_between_snapshots = u.trajectory.ts.dt
@@ -82,7 +97,6 @@ def extract_from_aiida_archive(aiida_file_path):
             # print("$$$", entry.process_label)
             possible_top, possible_trajs = None, []
             for outputs in outgoing:
-                # print("**", outputs, type(outputs), entry.process_label)
                 # print(dir(outputs))
                 if isinstance(outputs, orm.Dict) and entry.process_label == "MdrunCalculation":
                     # print("^^^", outputs.get_dict())
